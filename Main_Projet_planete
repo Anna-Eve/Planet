@@ -1,0 +1,25 @@
+
+import math
+import matplotlib.pyplot as plt
+import numpy as np
+X=[]
+Y=[]
+Y2=[]
+def calcule():
+    for tn in np.arange(0, 2, 0.1):
+        y=math.exp(6*tn)
+        X.append(tn)
+        Y.append(y)
+        y2=y*6*0.1+y
+        Y2.append(y2)
+    plt.plot(X, Y, label='y =e(6*x)',color = 'violet')
+    plt.plot(X, Y2, label='y =e(6*x)*6*0.1+e(6*x)',color = 'blue')
+    plt.legend()
+    plt.show()
+    print(X,Y)
+
+
+
+
+
+calcule()
