@@ -1,25 +1,26 @@
-
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-X=[]
-Y=[]
-Y2=[]
-def calcule():
-    for tn in np.arange(0, 2, 0.1):
-        y=math.exp(6*tn)
-        X.append(tn)
-        Y.append(y)
-        y2=y*6*0.1+y
-        Y2.append(y2)
-    plt.plot(X, Y, label='y =e(6*x)',color = 'violet')
-    plt.plot(X, Y2, label='y =e(6*x)*6*0.1+e(6*x)',color = 'blue')
-    plt.legend()
-    plt.show()
-    print(X,Y)
+X=[] #liste des coordonnées x de la fonction (équivaut dans le code à tn)
+Y=[] #liste des coordonnées y de la fonction (équivaut dans le code à y)
+Y2=[] #liste des coordonnées y2 de la fonction (équivaut dans le code à y2)
+e=[] #Liste des erreurs
+
+def calcul():
+    for tn in np.arange(0, 2, 2/50): #boucle for dans l'intervalle [0,2] avec un pas de 1/10000
+        y=math.exp(6*tn) #y devient la coordonnée y pour la représentation avec la méthode mathématique
+        X.append(tn)#on ajoute la coordonnée x soit tn à la liste des coordonnées de x
+        Y.append(y) #on ajoute la coordonnée y au temps tn à la liste des coordonnées de y
+        y2=y*6*0.1+y #y devient la coordonnée y pour la représentation avec la méthode d'Euler
+        Y2.append(y2) #on ajoute la coordonnée y2 au temps tn à la liste des coordonnées de y2
+    plt.plot(X, Y, label='Méthode mathématique y =e(6*x)',color = 'violet') #on crée la courbe du calcul avec la méthode mathématique 
+    plt.plot(X, Y2, label='Méthode d Euler y =e(6*x)*6*0.1+e(6*x)',color = 'blue') #on crée la courbe du calcul avec la méthode d'Euler
+    for i in range(len(Y)):
+        e.append(abs(Y[i]-Y2[i]))# on ajoute à la liste erreur la valeur absolue de la fonction des valeurs exacte - les valeurs de la méthode d'Euler en chaque point
+    plt.plot(X,e,label='Courbe d érreur en foncttion de h',color = 'cyan')
+    plt.legend() #affiche les legendes
+    plt.axes([0,2,0,250000])
+    plt.show() #montre les courbes et légendes créées
 
 
-
-
-
-calcule()
+calcul()
