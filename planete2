@@ -1,0 +1,126 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+from math import*
+import random
+from random import randint
+from matplotlib.animation import FuncAnimation
+import matplotlib.animation as animation
+from matplotlib.patches import Circle
+
+G=6.67*10**(-11)
+M=1.989*10**30
+fig, ax = plt.subplots() # Création de la figure et des axes
+
+# Création de la ligne qui sera mise à jour au fur et à mesure
+
+
+Mercure={"masse": 3.3011*10**23,"périhélie":46001200 , "exentricité":0.2056, "longueur demi-grand axe": 57909050}
+Venus={"masse": 4.8675*10**24,"périhélie":107476000, "exentricité":0.00678, "longueur demi-grand axe": 108208475}
+Terre={"masse": 5.972*10**24,"périhélie":147098074, "exentricité":0.0167, "longueur demi-grand axe": 149598023}
+Mars={"masse": 6.39*10**23,"périhélie":206620000, "exentricité":0.0934, "longueur demi-grand axe": 227940000}
+Jupiter={"masse": 1.898*10**27,"périhélie":740520000, "exentricité":0.0489, "longueur demi-grand axe": 778570000}
+Saturne={"masse": 5.683*10**26,"périhélie":1350000000, "exentricité":0.0556, "longueur demi-grand axe": 1430000000}
+Uranus={"masse": 8.681*10**25,"périhélie":2740000000, "exentricité":0.0472, "longueur demi-grand axe": 2870000000}
+Néptune={"masse": 1.024*10**26,"périhélie":4450000000, "exentricité":0.0086, "longueur demi-grand axe": 4500000000}
+Planet=[Mercure,Venus,Terre,Mars,Jupiter,Saturne,Uranus,Néptune]
+
+open ("vitesse.txt", "a")
+
+
+window = plt.subplots(figsize=(12, 12))
+fig, axe = window
+
+def trois_d():
+    ax = plt.figure().add_subplot(projection='3d')
+    ax.legend()
+    ax.set_xlim(-8*10**8, 8*10**8)
+    ax.set_ylim(-8*10**8, 8*10**8)
+    ax.set_zlim(-8*10**8, 8*10**8)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+def v(p):
+    vper=[sqrt((G*(M+Planet[p]["masse"])/Planet[p]["longueur demi-grand axe"])*((1+Planet[p]["exentricité"])/(1-Planet[p]["exentricité"])))]
+    if p==0:
+        print("La vitesse de la Mercure est", vper)
+    if p==1:
+        print("La vitesse de Venus est", vper)
+    if p==2:
+        print("La vitesse de Terre est", vper)
+    if p==3:
+        print("La vitesse de Mars est", vper)
+    if p==4:
+        print("La vitesse de Jupiter est", vper)
+    if p==5:
+        print("La vitesse de Saturne est", vper)
+    if p==6:
+        print("La vitesse de Uranus est", vper)
+    if p==7:
+        print("La vitesse de Neptune est", vper)
+    with open ("vitesse.txt", "a") as f: #ouverture un fichier texte
+        f.write(str(vper)) #ecrire dans le fichier texte les mots de passes
+    return vper
+
+
+
+
+
+X=[]
+Y=[]
+def euler(périhélie,p,c,window,r):
+    
+    t=np.linspace(0,100000,100001)
+    
+    # listes positions de la Terre par rapport au Soleil
+    x=[périhélie]
+    y=[0]
+    #z=np.zeros(365)
+    #listes vitesses
+    vx=[0]
+    vy=[v(p)]
+          
+    #vz=np.zeros(365)
+    #listes accélérations
+    ax=[]
+    ay=[]
+    #az=np.zeros(365)
+    for i in range(1,len(t)):
+        x.append(x[i-1]+vx[i-1]*(t[i]-t[i-1]))
+        y.append(y[i-1]+vy[i-1]*(t[i]-t[i-1]))
+        ax.append((-G*M*x[i])/((sqrt((x[i]**2)+(y[i]**2)))**3))
+        ay.append((-G*M*y[i])/((sqrt((x[i]**2)+(y[i]**2)))**3))
+        vx.append(vx[i-1]+ax[i-1]*(t[i]-t[i-1]))
+        vy.append(vy[i-1]+ay[i-1]*(t[i]-t[i-1]))
+        plt.plot(x,y,c)
+
+
+def etoile():
+    X=[]
+    Y=[]
+    ax.set_facecolor("midnightblue")
+    for i in range (100):
+        X.append(random.randint(-4*10**9,4*10**9))
+        Y.append(random.randint(-4*10**9,4*10**9))
+        plt.scatter(X,Y,s=1*10**-2,c="w")
+    
+def planet():
+    #etoile()
+    plt.scatter(0,0,s=5,c="yellow")
+    euler(Mercure["périhélie"],0,"tan", window,5)
+    euler(Venus["périhélie"],1,"orange", window,5)
+    euler(Terre["périhélie"],2,"blue", window,5)
+    animation(5)
+    #euler(Mars["périhélie"],3,"red", window)
+    #euler(Jupiter["périhélie"],4,"beige", window)
+    #euler(Saturne["périhélie"],5,"darkkhaki", window)
+    #euler(Uranus["périhélie"],6,"cyan", window)
+    #euler(Néptune["périhélie"],7,"royalblue", window)
+    plt.show()   
+planet()
+
+
+
+
+

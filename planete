@@ -2,12 +2,33 @@ import math
 from math import *
 import matplotlib.pyplot as plt
 import numpy as np
+
 #orbite moyen terre 149600000= 150*10^6
 X=[]
+n=np.linspace(0,2*np.pi,1496)
 def mouv():
-    for X in (0,52):
-        n=2*pi*150
-    plt.plot(X,n,label='Courbe d érreur en foncttion de h',color = 'cyan')
-    plt.shox()
+    r=2*pi*1496
+    fig, ax = plt.subplots(1)
 
-mouv()
+    ax.plot(r)
+    ax.set_aspect(1)
+
+    plt.xlim(-10000,10000)
+    plt.ylim(-10000,10000)
+    plt.show()
+    #for i in (0,52,1):
+
+
+import math
+from math import *
+import matplotlib.pyplot as plt
+import numpy as np
+
+plt.xlim(-1000,1000)
+plt.ylim(-1000,1000)
+
+#def limite des axes
+ax.set_xlim(center[0] - radius - 1, center[0] + radius + 1)
+ax.set_ylim(center[1] - radius - 1, center[1] + radius + 1)
+    
+

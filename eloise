@@ -1,0 +1,68 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+from math import*
+import random
+from random import randint
+from matplotlib.animation import FuncAnimation
+import matplotlib.animation as animation
+from matplotlib.patches import Circle
+
+
+fig, ax= plt.subplots()
+
+#Echelle du graphique
+ax.set_xlim(-2e11, 2e11)#Choisi
+ax.set_ylim(-2e11, 2e11)#Choisi
+ax.set_aspect('equal')#On souhaite obtenir un graphique carré
+
+#Création des trajectoires mises à jour au fur et à mesure et des points
+ligne_terre, = ax.plot([], [], 'c-', label='Terre')#Initialisation du tracé la trajectoire
+ligne_venus, = ax.plot([], [], 'w-', label='Venus')#Initialisation du tracé la trajectoire
+ligne_mercure, = ax.plot([], [], 'm-', label='Mercure')#Initialisation du tracé la trajectoire
+scatter_terre, = ax.plot([], [], 'co')#Initialisation du point représentant la planète
+scatter_venus, = ax.plot([], [], 'wo')#Initialisation du point représentant la planète
+scatter_mercure, = ax.plot([], [], 'mo')#Initialisation du point représentant la planète
+ax.legend()#Affichage des légendes
+
+#Liste des trajectoires des planètes
+lignes = [ligne_terre, ligne_mercure, ligne_venus]
+
+#Initialisation des lignes de trajectoire et des points avant l'animation avec coordonnées vides
+def init():
+    '''
+    Cette fonction initialise les lignes des trajectoires de points en position vide
+    '''
+    for ligne in lignes:
+        ligne.set_data([], [])#Initialisation des lignes
+        scatter_terre.set_data([], [])#Initialisation des points
+        scatter_mercure.set_data([], [])#Initialisation des points
+        scatter_venus.set_data([], [])#Initialisation des points
+    return lignes + [scatter_terre, scatter_mercure, scatter_venus]#Retourne une liste de trajectoires et une liste de points, le tout est pour l'instant vide
+
+#Création de la fonction des nouvelles images
+def update(frame):
+    '''
+    Cette fonction permet de mettre à jour les trajectoires et donc de défiler les différentes images(frame) pour animer le graphique
+    Le paramètre 'frame' correspond au nombre d'images souhaitées
+    '''
+   
+    x_terre, y_terre = euler_asym_positions('la Terre')#Appel de la fonction Euler asymétrique pour calculer les positions des planètes
+    x_mercure, y_mercure = euler_asym_positions('Mercure')
+    x_venus, y_venus = euler_asym_positions('Venus')
+
+    lignes[0].set_data(x_terre[:frame], y_terre[:frame])# ':frame' va de l'indice 0 a frame pour mettre à jour à chaque étape il y a de plus en plus d'indices un par un
+                                                                                    #Appel l'indice 0 de la liste 'lignes' qui est la trajectoire de la Terre
+                                                                                    #Met à jour la trajectoire de la Terre
+    lignes[1].set_data(x_mercure[:frame], y_mercure[:frame])
+    lignes[2].set_data(x_venus[:frame], y_venus[:frame])
+   
+    #Mise à jour des points représentants la position des planètes
+    scatter_terre.set_data(x_terre[frame], y_terre[frame])#Rempli donc la liste des positions successives de la trajectoire de la Terre pour chaque frame
+    scatter_mercure.set_data(x_mercure[frame], y_mercure[frame])
+    scatter_venus.set_data(x_venus[frame], y_venus[frame])
+
+    return lignes + [scatter_terre, scatter_mercure, scatter_venus]#Retourne une liste de trajectoires et une liste de points, le tout est rempli
+
+
+ani = FuncAnimation(fig, update, frames=9000, init_func=init, interval = 20,blit=True)
