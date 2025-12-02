@@ -1,0 +1,266 @@
+#Jean-Baptiste et Anna-Eve
+
+#mise en place des modules nécéssaires pour la réalisation du programme
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+from math import*
+import random
+from random import randint
+
+G=6.67*10**(-11) #Constante gravitationnel
+M=1.989*10**30 #Masse de notre soleil
+
+Mercure={"masse": 3.3011*10**23,"périhélie":46001200 , "exentricité":0.2056, "longueur demi-grand axe": 57909050} #dico d'info sur la planete Mercure
+Venus={"masse": 4.8675*10**24,"périhélie":107476000, "exentricité":0.00678, "longueur demi-grand axe": 108208475} #dico d'info sur la planete Venus
+Terre={"masse": 5.972*10**24,"périhélie":147098074, "exentricité":0.0167, "longueur demi-grand axe": 149598023} #dico d'info sur la planete Terre
+Mars={"masse": 6.39*10**23,"périhélie":206620000, "exentricité":0.0934, "longueur demi-grand axe": 227940000} #dico d'info sur la planete Mars
+Jupiter={"masse": 1.898*10**27,"périhélie":740520000, "exentricité":0.0489, "longueur demi-grand axe": 778570000} #dico d'info sur la planete Jupiter
+Saturne={"masse": 5.683*10**26,"périhélie":1350000000, "exentricité":0.0556, "longueur demi-grand axe": 1430000000} #dico d'info sur la planete Saturne
+Uranus={"masse": 8.681*10**25,"périhélie":2740000000, "exentricité":0.0472, "longueur demi-grand axe": 2870000000} #dico d'info sur la planete Uranus
+Néptune={"masse": 1.024*10**26,"périhélie":4450000000, "exentricité":0.0086, "longueur demi-grand axe": 4500000000} #dico d'info sur la planete Néptune
+Planet=[Mercure,Venus,Terre,Mars,Jupiter,Saturne,Uranus,Néptune] #liste des planetes
+
+open ("vitesse.txt", "a") #ouvre un fichier texte nommé vitesse.tkt
+
+r=int(input("Quel méthode voulez vous utiliser?\n1) Euler assymétrique\n2)Euler →")) #choix de la méthode choisi
+assert (r)==1 or 2 #verifie que le valeur entré soit valide
+
+
+if r==2:#si euler a été selectionné
+    fig, ax = plt.subplots() # Création de la figure et des axes
+    ax.legend() #creation des legendes
+    ax.set_xlim(-8*10**8, 8*10**8) #limites de l'axe x
+    ax.set_ylim(-8*10**8, 8*10**8) #limites de l'axe y
+    ax.set_xlabel('X') #nom de l'axe
+    ax.set_ylabel('Y') #nom de l'axe
+    w=1
+elif r==1:#si euler assymétrique à été selectionné
+    w=int(input("Quel type de résolution voulez vous?\n1) 2d\n2) 3d →")) #choix de la méthode choisi
+    assert (w)==1 or 2 #verifie que la valeur entré soit valide
+    if w==1:
+        fig, ax = plt.subplots() # Création de la figure et des axes
+        ax.legend() #creation des legendes
+        ax.set_xlim(-8*10**8, 8*10**8) #limites de l'axe x
+        ax.set_ylim(-8*10**8, 8*10**8) #limites de l'axe y
+        ax.set_xlabel('X') #nom de l'axe
+        ax.set_ylabel('Y') #nom de l'axe
+    elif w==2:
+        ax = plt.figure().add_subplot(projection='3d') #crée la figure ou seront représenter les planets en 3d
+        ax.legend() #creation des legendes
+        ax.set_xlim(-8*10**8, 8*10**8) #limites de l'axe x
+        ax.set_ylim(-8*10**8, 8*10**8) #limites de l'axe y
+        ax.set_zlim(-8*10**8, 8*10**8) #limites de l'axe z
+        ax.set_xlabel('X') #nom de l'axe
+        ax.set_ylabel('Y') #nom de l'axe
+        ax.set_zlabel('Z') #nom de l'axe
+
+a=[] #creation d'une liste a qui obtiendra les valeurs de vitesse des planete calculé
+def v(p):
+    vper=[sqrt((G*(M+Planet[p]["masse"])/Planet[p]["longueur demi-grand axe"])*((1+Planet[p]["exentricité"])/(1-Planet[p]["exentricité"])))] #calcule de la vitesse pour chaque planete
+    a.append(str(vper)) #ajout de la vitesse calculer a la liste créée a cet effet
+    return vper #retourne la vitesse
+
+def sauvegarde():
+    with open ("vitesse.txt", "a") as f: #ouverture un fichier texte
+        f.write(f"{a}") #ecrire dans le fichier texte le resultat du calcul de la vitesse des planet si besoin pour un autre programme
+
+def euler(périhélie,p,c): #fonction euler qui prend en paramettre la périhélie de la planete, le numero de la planete dans la liste planete p et la couleur de la planete c
+    t=np.linspace(0,100000,100001)
+   
+    # listes positions de la Terre par rapport au Soleil méthode Euler
+    x=[périhélie]
+    y=[0]
+    #z=np.zeros(365)
+
+    #listes vitesses méthode Euler
+    vx=[0]
+    vy=[sqrt(G*(M+Planet[p]["masse"])/Planet[p]["longueur demi-grand axe"])*((1+e)/(1-e))]
+    #vzt=np.zeros(100000)
+
+    #listes accélérations méthode Euler
+    ax=[]
+    ay=[]
+    #azt=np.zeros(100000)
+
+    #listes des énergies (méthode euler):
+    Ept=[-(G*Planet[p]["masse"]*M)/sqrt((x[0]**2)+(y[0]**2))]
+    Ect=[(Planet[p]["masse"]*(sqrt((vx[0])**2+(vy[0])**2)**2))/2]
+    Emt=[Ect[0]+Ept[0]]
+    for i in range(1,len(t)): #calcul des x, y, acceleration sur x et y et vitesse sur x et y grâce a la méthode d'Euler, et calcule de ep em et ec avec euler
+        x.append(x[i-1]+vx[i-1]*(t[i]-t[i-1]))
+        y.append(y[i-1]+vy[i-1]*(t[i]-t[i-1]))
+        ax.append((-G*M*x[i])/((sqrt((x[i]**2)+(y[i]**2)))**3))
+        ay.append((-G*M*y[i])/((sqrt((x[i]**2)+(y[i]**2)))**3))
+        vx.append(vx[i-1]+ax[i-1]*(t[i]-t[i-1]))
+        vy.append(vy[i-1]+ay[i-1]*(t[i]-t[i-1]))
+        Ept.append(-(G*Planet[p]["masse"]*M)/sqrt((x[i]**2)+(y[i]**2)))
+        Ect.append((Planet[p]["masse"]*(sqrt((vx[i])**2+(vy[i])**2)**2))/2)
+        Emt.append(Ept[i]+Ect[i])
+    plt.subplot(221) #ouvre plusieur graphe sur une seule fênetre
+    #etoile() #appel de la fonction etoile
+    plt.scatter(0,0,s=5,c="yellow") #mise en place d'un soleil en position (0,0)
+    plt.plot(x,y,c ,label="Trajectoire de la Terre autour du Soleil")  #Fonction pour afficher l'orbite en x y de la couleur c avec une légende
+    plt.title("Trajectoire des planètes dans le système solaire méthode euler") #titre du graphique
+    plt.legend() #paramettre les legende
+    plt.subplot(222) #ouvre plusieur graphe sur une seule fênetre
+    plt.plot(t,Emt,'-r',label="Courbe de l'énergie mécanique méthode euler") #Fonction pour afficher la courbe Em en fonction du temps avec une légende
+    plt.plot(t,Ect,'-g') #Fonction pour afficher la courbe Ec en fonction du temps 
+    plt.plot(t,Ept,'-b') #Fonction pour afficher la courbe Ep en fonction du temps 
+    plt.title("Conservation de l'énergie du système méthode euler") #titre du graphique
+    plt.legend() #paramettre les legende
+
+
+def euler_as(périhélie,p,c): #fonction euler asymétrique qui prend en paramettre la périhélie de la planete, le numero de la planete dans la liste planete p et la couleur de la planete c
+    t=np.linspace(0,100000,100001)
+   
+    # listes positions de la Terre par rapport au Soleil
+    x=[périhélie]
+    y=[0]
+    #z=np.zeros(365)
+
+    #listes vitesses
+    vx=[0]
+    vy=v(p)
+    #vz=np.zeros(365)
+    sauvegarde()
+
+    #listes accélérations
+    ax=[]
+    ay=[]
+    #az=np.zeros(365)
+
+ #listes des énergies (méthode euler asymétrique): 
+    Ep=[-(G*Planet[p]["masse"]*M)/sqrt((x[0]**2)+(y[0]**2))]
+    Ec=[(Planet[p]["masse"]*(sqrt((vx[0])**2+(vy[0])**2)**2))/2]
+    Em=[Ec[0]+Ep[0]]
+
+
+    for i in range(1,len(t)): #calcul des x, y, acceleration sur x et y et vitesse sur x et y grâce a la méthode d'Euler asymétrique et calcule de ep em et ec avec euler asymétrique
+        x.append(x[i-1]+vx[i-1]*(t[i]-t[i-1]))
+        y.append(y[i-1]+vy[i-1]*(t[i]-t[i-1]))
+        ax.append((-G*M*x[i])/((sqrt((x[i]**2)+(y[i]**2)))**3))
+        ay.append((-G*M*y[i])/((sqrt((x[i]**2)+(y[i]**2)))**3))
+        vx.append(vx[i-1]+ax[i-1]*(t[i]-t[i-1]))
+        vy.append(vy[i-1]+ay[i-1]*(t[i]-t[i-1]))
+        Ep.append(-(G*Planet[p]["masse"]*M)/sqrt((x[i]**2)+(y[i]**2)))
+        Ec.append((Planet[p]["masse"]*(sqrt((vx[i])**2+(vy[i])**2)**2))/2)
+        Em.append(Ep[i]+Ec[i])
+    plt.subplot(221) #ouvre plusieur graphe sur une seule fênetre  
+    plt.scatter(0,0,s=5,c="yellow") #mise en place d'un soleil en position (0,0)
+    #etoile() #appel de la fonction etoile
+    plt.plot(x,y,c) #Fonction pour afficher l'orbite en x y de la couleur c avec une légende
+    plt.title("Trajectoire des planètes dans le système solaire méthode euler asymétrique") #titre du graphique
+    plt.legend() #paramettre les legende
+    plt.subplot(222)  #ouvre plusieur graphe sur une seule fênetre
+    plt.plot(t,Em,'-r') #Fonction pour afficher la courbe Em en fonction du temps avec une légende
+    plt.plot(t,Ec,'-g') #Fonction pour afficher la courbe Ec en fonction du temps avec une légende
+    plt.plot(t,Ep,'-b') #Fonction pour afficher la courbe Ep en fonction du temps avec une légende
+    plt.title("Conservation de l'énergie du système méthode euler asymétrique") #titre du graphique
+    plt.legend() #paramettre les legende
+
+def euler_as3d(périhélie,p,c): #fonction euler asymétrique qui prend en paramettre la périhélie de la planete, le numero de la planete dans la liste planete p et la couleur de la planete c
+    t=np.linspace(0,100000,100001)
+   
+    # listes positions de la Terre par rapport au Soleil
+    x=[périhélie]
+    y=[0]
+    #z=np.zeros(365)
+
+    #listes vitesses
+    vx=[0]
+    vy=v(p)
+    #vz=np.zeros(365)
+    sauvegarde()
+
+    #listes accélérations
+    ax=[]
+    ay=[]
+    #az=np.zeros(365)
+
+    for i in range(1,len(t)): #calcul des x, y, acceleration sur x et y et vitesse sur x et y grâce a la méthode d'Euler asymétrique et calcule de ep em et ec avec euler asymétrique
+        x.append(x[i-1]+vx[i-1]*(t[i]-t[i-1]))
+        y.append(y[i-1]+vy[i-1]*(t[i]-t[i-1]))
+        ax.append((-G*M*x[i])/((sqrt((x[i]**2)+(y[i]**2)))**3))
+        ay.append((-G*M*y[i])/((sqrt((x[i]**2)+(y[i]**2)))**3))
+        vx.append(vx[i-1]+ax[i-1]*(t[i]-t[i-1]))
+        vy.append(vy[i-1]+ay[i-1]*(t[i]-t[i-1]))
+    plt.scatter(0,0,s=5,c="yellow") #mise en place d'un soleil en position (0,0)
+    etoile() #appel de la fonction etoile
+    plt.plot(x,y,c) #Fonction pour afficher l'orbite en x y de la couleur c avec une légende
+    plt.title("Trajectoire des planètes dans le système solaire méthode euler asymétrique") #titre du graphique
+    plt.legend() #paramettre les legende
+
+
+n=int(input("Combien de planètes voulez vous afficher? (entre 1-8)")) #demande le nombre de planete a afficher
+assert (n)==1 or 2 or 3 or 4 or 5 or 6 or 7 or 8 #verifie que la valeur est possible
+
+def etoile():
+    X=[] #creation d'une listse de coordonnée x
+    Y=[] #creation d'une listse de coordonnée y
+    ax.set_facecolor("midnightblue") #mise en place d'un fond bleu foncé pour représenter le ciel
+    for i in range (100):
+        X.append(random.randint(-4*10**9,4*10**9)) #ajoue a la liste des coordonnées de x une valeur au hasard entre -4*10**9 et 4*10**9
+        Y.append(random.randint(-4*10**9,4*10**9)) #ajoue a la liste des coordonnées de y une valeur au hasard entre -4*10**9 et 4*10**9
+        plt.scatter(X,Y,s=1*10**-2,c="w") #placement de point blanc a des coordonnées x et y aléatoire pour représenter des étoiles
+    
+def planete():
+    if w==1:
+        if r==1:
+            if n>=1:
+                euler_as(Mercure["périhélie"],0,"tan") #appel de la fonction Euler pour Mercure
+            if n>=2:
+                euler_as(Venus["périhélie"],1,"orange") #appel de la fonction Euler pour Venus
+            if n>=3:
+                euler_as(Terre["périhélie"],2,"blue") #appel de la fonction Euler pour la Terre
+            if n>=4:
+                euler_as(Mars["périhélie"],3,"red") #appel de la fonction Euler pour Mars
+            if n>=5:
+                euler_as(Jupiter["périhélie"],4,"beige") #appel de la fonction Euler pour Jupiter
+            if n>=6:
+                euler_as(Saturne["périhélie"],5,"darkkhaki") #appel de la fonction Euler pour Saturne
+            if n>=7:
+                euler_as(Uranus["périhélie"],6,"cyan") #appel de la fonction Euler pour Uranus
+            if n>=8:
+                euler_as(Néptune["périhélie"],7,"royalblue") #appel de la fonction Euler pour Néptune
+        elif r==2:
+            if n>=1:
+                euler(Mercure["périhélie"],0,"tan") #appel de la fonction Euler pour Mercure
+            if n>=2:
+                euler(Venus["périhélie"],1,"orange") #appel de la fonction Euler pour Venus
+            if n>=3:
+                euler(Terre["périhélie"],2,"blue") #appel de la fonction Euler pour la Terre
+            if n>=4:
+                euler(Mars["périhélie"],3,"red") #appel de la fonction Euler pour Mars
+            if n>=5:
+                euler(Jupiter["périhélie"],4,"beige") #appel de la fonction Euler pour Jupiter
+            if n>=6:
+                euler(Saturne["périhélie"],5,"darkkhaki") #appel de la fonction Euler pour Saturne
+            if n>=7:
+                euler(Uranus["périhélie"],6,"cyan") #appel de la fonction Euler pour Uranus
+            if n>=8:
+                euler(Néptune["périhélie"],7,"royalblue") #appel de la fonction Euler pour Néptune
+    elif w==2: 
+        if n>=1:
+            euler_as3d(Mercure["périhélie"],0,"tan") #appel de la fonction Euler pour Mercure
+        if n>=2:
+            euler_as3d(Venus["périhélie"],1,"orange") #appel de la fonction Euler pour Venus
+        if n>=3:
+            euler_as3d(Terre["périhélie"],2,"blue") #appel de la fonction Euler pour la Terre
+        if n>=4:
+            euler_as3d(Mars["périhélie"],3,"red") #appel de la fonction Euler pour Mars
+        if n>=5:
+            euler_as3d(Jupiter["périhélie"],4,"beige") #appel de la fonction Euler pour Jupiter
+        if n>=6:
+            euler_as3d(Saturne["périhélie"],5,"darkkhaki") #appel de la fonction Euler pour Saturne
+        if n>=7:
+            euler_as3d(Uranus["périhélie"],6,"cyan") #appel de la fonction Euler pour Uranus
+        if n>=8:
+            euler_as3d(Néptune["périhélie"],7,"royalblue") #appel de la fonction Euler pour Néptune
+    plt.show()   #montre le resultat de toute les commandes lié au la mise en plalce
+planete() #appel de la fonction planete
+
+
+
+
+
